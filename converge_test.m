@@ -29,20 +29,8 @@ end
 
 %%
 
-% make a video of the fields in time
-figure(1); clf; colormap(redblue);
-for i = (1:400)
-    E = (real(fields.Ex*exp(-1i*i/10))); 
-    imagesc(flipud(transpose([E;E;E;E;E;E;E;E])),[-1.5,1.5]);
-    title('E_x');
-    xlabel('x grid points');
-    ylabel('y grid points');
-    colorbar();    
-    pause(0.01); clf;
-end
-
 % plot the convergence
-figure(2); clf;
+figure(1); clf; close all;
 plot(ginls,Gs);
 xlabel('grid points per \lambda');
 ylabel('gradient (E_0)');
@@ -50,3 +38,7 @@ title('checking convergence of gradient');
 set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
 set(gca,'FontSize',16,'fontWeight','normal')
 xlim([min(ginls) max(ginls)]);
+
+make_video(fields.Ex);
+make_video(fields.Ey);
+make_video(fields.Hz);
