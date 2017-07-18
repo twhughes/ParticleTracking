@@ -4,32 +4,40 @@
 % like this occurs around 100 grid points per wavelength.  Or a dl of
 % 2um/200 = 10 nm.
 
+% add all dependencies
 addpath(genpath('./dependencies'));
 
+% number of grid resolutions to look at
 N = 50;
+% fancy text progress bar (ignore)
 upd = textprogressbar(N);
 
+% grids per wavelength to scan
 ginls = linspace(20,300,N);
-R = 500e-9;
-gap = 400e-9;
 
-Gs = zeros(N,1);
+R = 500e-9;     % pillar radius (m)
+gap = 400e-9;   % gap spaing (m)
+beta = 0.5;     % electron speed / speed of light
+
+Gs = zeros(N,1);  % store gradients
 for i = (1:N) 
-    upd(i);
-    n_per_lam = ginls(i);
-    [G,phi,fields] = compute_fields(R, gap, beta, n_per_lam);
-    Gs(i) = G; 
+    upd(i);                     % update progress bar
+    n_per_lam = ginls(i);       % get resolution
+    [G,phi,fields] = compute_fields(R, gap, beta, n_per_lam);  % FDFD simulation
+    Gs(i) = G;                  % save gradient (in units of E0)
 end
 
 %%
 
-% make a video of the fields
+% make a video of the fields in time
 figure(1); clf; colormap(redblue);
-for i = (1:1000)
-    E = (real(fields.Ex*exp(1i*i/10))); imagesc([E;E;E;E;E;E;E;E]);
+for i = (1:400)
+    E = (real(fields.Ex'*exp(-1i*i/10))); 
+    imagesc([E;E;E;E;E;E;E;E]);
     pause(0.01); clf;
 end
 
+% plot the convergence
 figure(2); clf;
 plot(ginls,Gs);
 xlabel('grid points per \lambda');
