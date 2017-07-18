@@ -32,8 +32,12 @@ end
 % make a video of the fields in time
 figure(1); clf; colormap(redblue);
 for i = (1:400)
-    E = (real(fields.Ex'*exp(-1i*i/10))); 
-    imagesc([E;E;E;E;E;E;E;E]);
+    E = (real(fields.Ex*exp(-1i*i/10))); 
+    imagesc(flipud(transpose([E;E;E;E;E;E;E;E])),[-1.5,1.5]);
+    title('E_x');
+    xlabel('x grid points');
+    ylabel('y grid points');
+    colorbar();    
     pause(0.01); clf;
 end
 
