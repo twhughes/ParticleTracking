@@ -22,13 +22,13 @@ function [out, trajectory] = propagate_particle(in, fields, num_periods, beta, n
 
     [Nx,Ny] = size(Ex);
     dl = lambda/n_per_lam;
-    Lx = lambda*num_periods;
+    Lx = lambda*beta*num_periods;
     c0 = 3e8;
     v0 = beta*c0;
     t0 = Lx/v0;
     
-    dt = t0/100;    
-    TMAX = round(t0/dt*20);
+    dt = t0/1000;
+    TMAX = round(t0/dt*2);
         
     x = x0;
     y = y0;
@@ -40,7 +40,7 @@ function [out, trajectory] = propagate_particle(in, fields, num_periods, beta, n
     
     for T = (1:TMAX)
                
-        time_phase = exp(1i*2*pi*c0/lambda*T*dt + 1i*2*pi*phi);
+        time_phase = exp(1i*2*pi*c0/lambda*T*dt + 1i*phi);
         
         trajectory(:,T) = [x,y,px,py];
         
