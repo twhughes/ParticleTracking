@@ -7,16 +7,7 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
     py0 = in(4);
     
     % get obj.fields
-    %{
-    Ex = [];
-    Ey = [];
-    Hz = [];
-    for i = (1:obj.num_periods)
-        Ex = [Ex; obj.E0*obj.fields.Ex];
-        Ey = [Ey; obj.E0*obj.fields.Ey];
-        Hz = [Hz; obj.E0*obj.fields.Hz];        
-    end
-%}
+    
     Ex = obj.E0*obj.fields.Ex;
     Ey = obj.E0*obj.fields.Ey;
     Hz = obj.E0*obj.fields.Hz;
@@ -51,7 +42,7 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
             break;
         end
         
-        if (xi > obj.Nx)
+        if (xi > obj.Nx*obj.num_periods)
             out = [x y px py];
             break;            
         end   
