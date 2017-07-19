@@ -51,6 +51,7 @@ classdef simulation < dynamicprops
             if (obj.verbose) display('initializing simulation ...'); end
             obj.w0 = 2*pi*obj.c0/obj.lambda;
             obj.L = obj.lambda*obj.beta*obj.num_periods;
+            addpath(genpath('.'));
         end
         function obj = compute_fields(obj)
             % Computes the fields with an FDFD simulation

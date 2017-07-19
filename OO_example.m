@@ -1,5 +1,5 @@
 % initialize simulation if hasn't already been initialized
-if isempty(s)
+if (~exist('s'))
     s = simulation;
 end
 % compute the fields if haven't already been calculated, these are now stored in s along with other goodies
