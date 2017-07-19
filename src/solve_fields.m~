@@ -1,24 +1,24 @@
-function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
+function obj = compute_fields(obj)
     % function to compute the gradient, phase, and EM fields for a given
     % dual pillar simulation.  The pillars are assumed to be made of Si,
     % the wavelength is 2um.
        
     % simulation variables
-    lambda = 2e-6;          % wavelength
-    npml = 25;              % number of PML grids ( should be > 15 to be safe)
+    objlambda = 2e-6;          % wavelength
+    objnpml = 25;              % number of PML grids ( should be > 15 to be safe)
     eps = 3.45^2;           % permittivity of pillars   
     Pol = 'Hz';             % polarization ('Hz' or 'Ez')
    
     % define relevant lengths
-    spc_pml_src = lambda;   % space between pml and current source (m)
-    spc_src_pil = lambda;   % space between current source and pillar edge (m)
+    spc_pml_src = objlambda;   % space between pml and current source (m)
+    spc_src_pil = objlambda;   % space between current source and pillar edge (m)
     pil_radius = radius;    % pillar radius (m)
     spc_gap = gap;          % gap distance (m)
 
     % compute simulation parameters
-    dl = lambda/n_per_lam;  % compute grid resolution
+    dl = objlambda/n_per_lam;  % compute grid resolution
     RES = [dl dl];          % load into RES variable for FDFD function
-    NPML = [0 0 npml npml]; % load PML into NPML varible for FDFD ([-x +x -y +y])
+    NPML = [0 0 objnpml objnpml]; % load PML into NPML varible for FDFD ([-x +x -y +y])
     BC = [-1 -1];           % periodic boundary conditions
         
     % put these lengths in terms of discrete # of grid points
@@ -28,8 +28,8 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     pts_gap = round(spc_gap/dl);
 
     % compute number of grid points needed and corresoponding half grids
-    Nx = round(lambda*beta/dl);
-    Ny = round(2*npml + 2*pts_pml_src + 2*pts_src_tooth + 4*pts_pil + pts_gap);   
+    Nx = round(objlambda*beta/dl);
+    Ny = round(2*objnpml + 2*pts_pml_src + 2*pts_src_tooth + 4*pts_pil + pts_gap);   
     nx = round(Nx/2);
     ny = round(Ny/2);
 
@@ -40,17 +40,17 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     b = zeros(Nx,Ny);
 
     % inject the current sources
-    b(:,npml + pts_pml_src) = 1;
-    b(:,end-npml-pts_pml_src+1) = 1;  % comment this line out for single side drive
+    b(:,objnpml + pts_pml_src) = 1;
+    b(:,end-objnpml-pts_pml_src+1) = 1;  % comment this line out for single side drive
 
     % solve for the fields in a vacuum for normalization
-    [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,lambda,Pol,b);    % FDFD simulation 
+    [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,objlambda,Pol,b);    % FDFD simulation 
     E_abs = sqrt(abs(fields.Ex).^2 + abs(fields.Ey).^2);    % compute abs(E) everywhere
     E0 = mean(E_abs(:,ny));                                 % treat E0 as the average along gap
 
     % left and right y positions of the pillars
-    y_pil_left = npml + pts_pml_src + pts_src_tooth + pts_pil;
-    y_pil_right = Ny - (npml + pts_pml_src + pts_src_tooth + pts_pil) + 1;
+    y_pil_left = objnpml + pts_pml_src + pts_src_tooth + pts_pil;
+    y_pil_right = Ny - (objnpml + pts_pml_src + pts_src_tooth + pts_pil) + 1;
     % draw the pillars ono the epsilon grid
     for xi = (1:Nx)
         for yi = (1:Ny)
@@ -65,7 +65,7 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
 
     % compute the fields (and normalize by E0) for the real permittivity
     % grid (with dual pillars)
-    [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,lambda,Pol,b);
+    [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,objlambda,Pol,b);
     Ex = fields.Ex/E0;
     Ey = fields.Ey/E0;
     Hz = fields.Hz/E0;

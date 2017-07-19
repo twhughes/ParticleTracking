@@ -7,7 +7,7 @@ function [] = make_video(field_array)
     for i = (1:400)
         E = real(field_array*exp(-1i*i/10));
         imagesc(flipud(transpose([E;E;E;E;E;E;E;E])),[-scale*scale_factor,scale*scale_factor]);   
-        pause(0.01); clf;
+        pause(0.1); clf;
     end
     
 end
