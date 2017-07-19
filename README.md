@@ -8,3 +8,4 @@ the converge_test will scan through the grid resolution in order to look for con
 
 adding more functionality soon.
 
+![Alt text](./tracking.eps?raw=true "Particle Tracking Example")
