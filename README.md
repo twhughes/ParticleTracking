@@ -8,4 +8,4 @@ the converge_test will scan through the grid resolution in order to look for con
 
 adding more functionality soon.
 
-![Alt text](trajectories.eps?raw=true "Particle Tracking Example")
+![Alt text](https://raw.githubusercontent.com/twhughes/ParticleTracking/origin/trajectories.eps?raw=true "Particle Tracking Example")
