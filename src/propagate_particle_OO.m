@@ -41,11 +41,11 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
         xi = round(x/obj.dl);
         yi = round(y/obj.dl);
         
-        if (xi <= 0 || yi <= 0 || yi > obj.ny)
+        if (xi <= 0 || yi <= 0 || yi > obj.Ny)
             break;
         end
         
-        if (xi > obj.nx)
+        if (xi > obj.Nx)
             out = [x y px py];
             break;            
         end   
