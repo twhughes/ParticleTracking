@@ -8,7 +8,7 @@
 addpath(genpath('./dependencies'));
 
 % number of grid resolutions to look at
-N = 50;
+N = 10;
 % fancy text progress bar (ignore)
 upd = textprogressbar(N);
 
