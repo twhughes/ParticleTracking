@@ -17,10 +17,10 @@ classdef simulation < dynamicprops
         % Input pulse default parameters
         lambda = 2e-6;                      % wavelength (m)
         w0;                                 % angular frequency (rad/sec)
-        E0 = 1e6;                           % input field strength (V/m)
+        E0 = 1e9;                           % input field strength (V/m)
         % Geometry parameters
         beta = 0.5;                           % electron speed / speed of light
-        num_periods = 10;                   % number of DLA periods to simulate
+        num_periods = 20;                   % number of DLA periods to simulate
         r_pillars = 400e-9;                 % pillar radius (m)
         gap = 400e-9;                       % gap spacing (m)
         L;                                  % length of structure along propagation
@@ -46,13 +46,31 @@ classdef simulation < dynamicprops
     
     methods
         function obj = simulation
+            % Constructs a simulation object.  Sets some of the obvious
+            % parameters
+            if (obj.verbose) display('initializing simulation ...'); end
             obj.w0 = 2*pi*obj.c0/obj.lambda;
             obj.L = obj.lambda*obj.beta*obj.num_periods;
         end
         function obj = compute_fields(obj)
-            solve_fields(obj);
+            % Computes the fields with an FDFD simulation
+            if (obj.verbose) display('computing the field with FDFD ...'); end        
+            compute_fields_OO(obj);
+        end
+        function [out, trajectory] = propagate_particle(obj, in, phi)
+            if (obj.verbose) display('propagating the field with FDFD ...');  end
+            
+            % Propagates a particle with phase space vector 'in' =
+            % [x0,y0,z0, px0, py0, pz0] to give 'out' vector after full
+            % propagation with starting electric fields of phase 'phi'
+            if (isempty(obj.fields))
+                error('need to solve_fields before calling this method')
+            end            
+            [out, trajectory] = propagate_particle_OO(obj, in, phi);            
         end
         function obj = make_video(obj,val)
+            % Makes a video of the fields specified in argument (Ex, Ey,
+            % Ez) as a string
             if (isempty(obj.fields))
                 error('need to solve_fields before calling this method')
             end
@@ -73,6 +91,6 @@ classdef simulation < dynamicprops
                 imagesc(flipud(transpose([E;E;E;E;E;E;E;E])),[-scale*scale_factor,scale*scale_factor]);   
                 pause(0.01); clf;
             end
-        end
+        end        
     end
 end

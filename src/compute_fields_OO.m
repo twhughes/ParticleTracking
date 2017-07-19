@@ -1,4 +1,4 @@
-function [] = solve_fields(obj)
+function [] = compute_fields_OO(obj)
     % function to compute the gradient, phase, and EM fields for a given
     % dual pillar simulation.  The pillars are assumed to be made of Si,
     % the wavelength is 2um.
