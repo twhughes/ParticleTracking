@@ -7,6 +7,7 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
     py0 = in(4);
     
     % get obj.fields
+    %{
     Ex = [];
     Ey = [];
     Hz = [];
@@ -15,9 +16,14 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
         Ey = [Ey; obj.E0*obj.fields.Ey];
         Hz = [Hz; obj.E0*obj.fields.Hz];        
     end
+%}
+    Ex = obj.E0*obj.fields.Ex;
+    Ey = obj.E0*obj.fields.Ey;
+    Hz = obj.E0*obj.fields.Hz;
 
+    
     v0 = obj.beta*obj.c0;               % initial speed
-    prop_time = obj.L/v0;           % time for a straight particle to traverse structure
+    prop_time = obj.num_periods*obj.lambda*obj.beta/v0;           % time for a straight particle to traverse structure
     
     dt = prop_time/1000;            % time step
     TMAX = round(prop_time/dt*2);   % max number of times steps to consider
@@ -38,8 +44,8 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
         
         trajectory(:,T) = [x,y,px,py];
         
-        xi = round(x/obj.dl);
-        yi = round(y/obj.dl);
+        xi = mod(round(x/obj.dl),obj.Nx)+1;
+        yi = mod(round(y/obj.dl),obj.Ny)+1;
         
         if (xi <= 0 || yi <= 0 || yi > obj.Ny)
             break;
