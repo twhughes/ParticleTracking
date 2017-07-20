@@ -40,9 +40,8 @@ function [] = compute_fields_OO(obj)
     % inject the current sources
     b(:,obj.npml + pts_pml_src) = 1;
     if obj.dual_drive
-        b(:,end-obj.npml-pts_pml_src+1) = 1;  % comment this line out for single side drive
-    end
-    
+    b(:,end-obj.npml-pts_pml_src+1) = 1;  % comment this line out for single side drive
+
     % solve for the fields in a vacuum for normalization
     [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,obj.lambda,'Hz',b);    % FDFD simulation 
     E_abs = sqrt(abs(fields.Ex).^2 + abs(fields.Ey).^2);    % compute abs(E) everywhere
