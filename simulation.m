@@ -38,6 +38,8 @@ classdef simulation < dynamicprops
         % DLA parameters
         G;                                  % gradient of one section (V/m)   
         phi0;                               % phase of light for maximum acceleration
+        K;                                  % deflection gradient (V/m)
+        phik;                               % max deflection phase
         fields;                             % object storing Ex, Ey, and Hz fields
         % simulation parameters
         verbose = true;                     % whether to display progress messages.  Keep on for debugging.  Turn off for doing scans.

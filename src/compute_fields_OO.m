@@ -78,13 +78,19 @@ function [] = compute_fields_OO(obj)
     
     % get accelerating fields at gap center, define acceleration 'kernel' e
     Ex_mid = Ex(:,ny);
+    Ey_mid = Ey(:,ny);    
     eta = exp(1i*2*pi*(1:Nx)/Nx)/Nx;
 
     % compute gradient phasor
     g = sum(Ex_mid.*transpose(eta));
+    k = sum(Ey_mid.*transpose(eta));
+    
     % maximum acceleration gradient is the absolute value
     obj.G = abs(g);
+    obj.K = abs(k);
+    
     % grab the phase at maximum
     obj.phi0 = angle(g);
+    obj.phik = angle(k);
     
 end
