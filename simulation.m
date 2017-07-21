@@ -19,9 +19,10 @@ classdef simulation < dynamicprops
         w0;                                 % angular frequency (rad/sec)
         E0 = 1e9;                           % input field strength (V/m)
         % Geometry parameters
-        beta = 0.5;                           % electron speed / speed of light
+        beta = 0.5;                         % electron speed / speed of light
+        gamma;                              % relativistic gamma factor of FDFD test particle
         num_periods = 20;                   % number of DLA periods to simulate
-        r_pillars = 400e-9;                 % pillar radius (m)
+        r_pillars = 635.26e-9;              % pillar radius (m)
         gap = 400e-9;                       % gap spacing (m)
         L;                                  % length of structure along propagation
         W;                                  % width of structure perpendicular to propagation
@@ -30,7 +31,7 @@ classdef simulation < dynamicprops
         nx;                                 % number of x grid points/2
         ny;                                 % number of y grid points/2
         % Field simulation parameters
-        n_per_lam = 300;                    % number of grid points per wavelenth
+        n_per_lam = 200;                    % number of grid points per wavelenth
         dual_drive = 1;                     % dual sided drive (make 0 if single side, 1 if dual side)
         npml = 50;                          % number of PML points
         eps = 3.45^2;                       % relative permittivity of pillars        
@@ -53,12 +54,29 @@ classdef simulation < dynamicprops
             if (obj.verbose) display('initializing simulation ...'); end
             obj.w0 = 2*pi*obj.c0/obj.lambda;
             obj.L = obj.lambda*obj.beta*obj.num_periods;
+            obj.gamma = 1/sqrt(1-obj.beta^2);
             addpath(genpath('.'));
         end
         function obj = compute_fields(obj)
             % Computes the fields with an FDFD simulation
             if (obj.verbose) display('computing the field with FDFD ...'); end        
             compute_fields_OO(obj);
+        end
+        function optimize_radius(obj)
+            % scans radius and updates simulation with resulting radius and
+            NR = 20;
+            Rs = linspace(10e-9, obj.lambda*obj.beta, NR);
+            Gs = zeros(NR,1);
+            upd = textprogressbar(NR);
+            for i = (1:NR)
+                upd(i);
+                obj.r_pillars = Rs(i);
+                obj.compute_fields;                
+                Gs(i) = obj.G;
+            end
+            [~,I] = max(Gs);
+            obj.r_pillars = Rs(I);
+            obj.compute_fields;
         end
         function [out, trajectory] = propagate_particle(obj, in, phi)
             if (obj.verbose) display('propagating the field with FDFD ...');  end
@@ -88,7 +106,7 @@ classdef simulation < dynamicprops
             end
             scale = max(abs(field_array(:)));
             scale_factor = 0.2;    
-            figure(); clf; colormap(redblue); close all;
+            figure(); clf; colormap(redblue); close all; colormap(redblue)
             for i = (1:round(1000*2*pi/obj.movie_rate))
                 E = real(field_array*exp(-1i*i*obj.movie_rate/100));
                 imagesc(flipud(transpose([E;E;E;E;E;E;E;E])),[-scale*scale_factor,scale*scale_factor]);   

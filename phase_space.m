@@ -1,4 +1,4 @@
-% initialize simulation if hasn't already been initialized
+% initialize simulation if hasn't already been initialized (clear s)
 if (~exist('s'))
     s = simulation;
 end
@@ -8,7 +8,7 @@ if isempty(s.fields)
     s.compute_fields;
 end
 
-p0 = s.beta*s.me*s.c0;
+p0 = s.gamma*s.me*s.beta*s.c0;
 % define input phase space vector
 % scan through different phis and draw the trajectoroes
 Ne = 1000;                           % number of electrons
@@ -21,29 +21,29 @@ subplot(2,2,1); hold all;
 
 for i = (1:Ne)
     upd(i);
-    phi = rand()*2*pi;                              % random phase
+    phi = rand()*2*pi-s.phi0;                              % random phase
     x0 = 0;
     y0 = 0;
-    px0 = p0 + p0/50*randn();
+    px0 = p0 + p0/20*randn();
     py0 = 0;
     in = [x0, y0, px0, py0];
-    in_distributions(:,i) = ([in phi]);
-    [out, traj] = s.propagate_particle(in, phi);    
-    plot(1e6*traj(1,:),1e6*traj(2,:))
+    in_distributions(:,i) = ([in phi+s.phi0]);
+    [out, ~] = s.propagate_particle(in, phi);    
+    %plot(1e6*traj(1,:),1e6*traj(2,:))
     out_distributions(:,i) = out;
 end
 
 %%
-subplot(2,2,1);
-xlabel('x position (um)');
-ylabel('y position (um)');
-set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
-set(gca,'FontSize',16,'fontWeight','normal')
-plot([0,s.Nx*s.dl*s.num_periods*1e6],[-s.gap/2*1e6 -s.gap/2*1e6],'k');
-plot([0,s.Nx*s.dl*s.num_periods*1e6],[ s.gap/2*1e6  s.gap/2*1e6],'k');
+%subplot(2,3,(1:2));
+%xlabel('x position (um)');
+%ylabel('y position (um)');
+%set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
+%set(gca,'FontSize',16,'fontWeight','normal')
+%plot([0,s.Nx*s.dl*s.num_periods*1e6],[-s.gap/2*1e6 -s.gap/2*1e6],'k');
+%plot([0,s.Nx*s.dl*s.num_periods*1e6],[ s.gap/2*1e6  s.gap/2*1e6],'k');
 
-subplot(2,2,2)
-scatter(in_distributions(3,:)/p0,out_distributions(2,:)*1e6,6,'k','filled'); 
+subplot(2,2,1)
+scatter(in_distributions(3,:)/p0,out_distributions(2,:)*1e6,10,in_distributions(5,:),'filled'); 
 hold all;
 set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
 set(gca,'FontSize',16,'fontWeight','normal')
@@ -51,20 +51,33 @@ ylabel('final y position (um)');
 xlabel('input momentum (p0)');
 title('transverse position')
 
-subplot(2,2,3)
-scatter(in_distributions(3,:)/p0,(out_distributions(3,:)-in_distributions(3,:))/p0,6,'k','filled'); 
+subplot(2,2,2)
+scatter(in_distributions(3,:)/p0,(out_distributions(3,:)-in_distributions(3,:))/p0,10,in_distributions(5,:),'filled'); 
 set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
 set(gca,'FontSize',16,'fontWeight','normal')
 xlabel('input momentum (p0)');
 ylabel('momentum change (p0)');
 title('change in longitudinal momentum')
 
-subplot(2,2,4)
-scatter(in_distributions(3,:)/p0,out_distributions(4,:)/p0,6,'k','filled'); 
+subplot(2,2,3)
+scatter(in_distributions(3,:)/p0,out_distributions(4,:)/p0,10,in_distributions(5,:),'filled'); 
 xlabel('light phase (2\pi)')
 set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
 set(gca,'FontSize',16,'fontWeight','normal')
 xlabel('input momentum (p0)');
 ylabel('final transverse momentum (p0)');
 title('transverse momentum')
+
+
+subplot(2,2,4)
+pfinals = sqrt(out_distributions(3,:).^2 + out_distributions(4,:).^2);
+scatter(in_distributions(3,:)/p0,(pfinals-in_distributions(3,:))/p0,10,in_distributions(5,:),'filled'); 
+set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
+set(gca,'FontSize',16,'fontWeight','normal')
+xlabel('input momentum (p0)');
+ylabel('momentum change (p0)');
+title('change in longitudinal momentum')
+
+colormap(hsv); colorbar();
+
 %}

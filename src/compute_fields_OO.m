@@ -40,7 +40,7 @@ function [] = compute_fields_OO(obj)
     % inject the current sources
     b(:,obj.npml + pts_pml_src) = 1;
     if obj.dual_drive
-        b(:,end-obj.npml-pts_pml_src+1) = 1;  % comment this line out for single side drive
+        b(:,end-obj.npml-pts_pml_src+1) = -1;  % comment this line out for single side drive
     end
     
     % solve for the fields in a vacuum for normalization
@@ -78,12 +78,14 @@ function [] = compute_fields_OO(obj)
     
     % get accelerating fields at gap center, define acceleration 'kernel' e
     Ex_mid = Ex(:,ny);
-    Ey_mid = Ey(:,ny);    
+    Ey_mid = Ey(:,ny);   
+    Hz_mid = Hz(:,ny);    
+    
     eta = exp(1i*2*pi*(1:Nx)/Nx)/Nx;
 
     % compute gradient phasor
     g = sum(Ex_mid.*transpose(eta));
-    k = sum(Ey_mid.*transpose(eta));
+    k = sum(Ey_mid.*transpose(eta) + Hz_mid.*transpose(eta));
     
     % maximum acceleration gradient is the absolute value
     obj.G = abs(g);
