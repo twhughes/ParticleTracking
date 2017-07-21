@@ -11,7 +11,7 @@ end
 p0 = s.gamma*s.me*s.beta*s.c0;
 % define input phase space vector
 % scan through different phis and draw the trajectoroes
-Ne = 1000;                           % number of electrons
+Ne = 10000;                           % number of electrons
 upd = textprogressbar(Ne);
 s.verbose = false;                  % turn of verbosity (dont print)
 clf; hold all;
@@ -71,12 +71,12 @@ title('transverse momentum')
 
 subplot(2,2,4)
 pfinals = sqrt(out_distributions(3,:).^2 + out_distributions(4,:).^2);
-scatter(in_distributions(3,:)/p0,(pfinals-in_distributions(3,:))/p0,10,in_distributions(5,:),'filled'); 
+scatter(in_distributions(3,:)/p0,(pfinals)/p0,10,in_distributions(5,:),'filled'); 
 set(findall(gcf,'type','text'),'FontSize',16,'fontWeight','normal')
 set(gca,'FontSize',16,'fontWeight','normal')
 xlabel('input momentum (p0)');
-ylabel('momentum change (p0)');
-title('change in longitudinal momentum')
+ylabel('final momentum (p0)');
+title('longitudinal momentum')
 
 colormap(hsv); colorbar();
 
