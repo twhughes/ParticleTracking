@@ -66,26 +66,26 @@ function [] = compute_fields_OO(obj)
     % compute the fields (and normalize by E0) for the real permittivity
     % grid (with dual pillars)
     [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,obj.lambda,'Hz',b);
-    Ez = fields.Ex/E0;
+    Ex = fields.Ex/E0;
     Ey = fields.Ey/E0;
-    Hx = fields.Hz/E0;
+    Hz = fields.Hz/E0;
     
     % make field_out variable to return normalized fields
     obj.fields = {};
-    obj.fields.Ez = Ez;
+    obj.fields.Ex = Ex;
     obj.fields.Ey = Ey;
-    obj.fields.Hx = Hx;
+    obj.fields.Hz = Hz;
     
     % get accelerating fields at gap center, define acceleration 'kernel' e
-    Ez_mid = Ez(:,ny);
+    Ex_mid = Ex(:,ny);
     Ey_mid = Ey(:,ny);   
-    Hx_mid = Hx(:,ny);    
+    Hz_mid = Hz(:,ny);    
     
     eta = exp(1i*2*pi*(1:Nz)/Nz)/Nz;
 
     % compute gradient phasor
-    g = sum(Ez_mid.*transpose(eta));
-    k = sum(Ey_mid.*transpose(eta) + Hx_mid.*transpose(eta));
+    g = sum(Ex_mid.*transpose(eta));
+    k = sum(Ey_mid.*transpose(eta) + Hz_mid.*transpose(eta));
     
     % maximum acceleration gradient is the absolute value
     obj.G = abs(g);

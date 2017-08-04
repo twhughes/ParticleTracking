@@ -18,7 +18,7 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     % compute simulation parameters
     dl = lambda/n_per_lam;  % compute grid resolution
     RES = [dl dl];          % load into RES variable for FDFD function
-    NPML = [0 0 npml npml]; % load PML into NPML varible for FDFD ([-x +x -y +y])
+    NPML = [0 0 npml npml]; % load PML into NPML varible for FDFD ([-z +z -y +y])
     BC = [-1 -1];           % periodic boundary conditions
         
     % put these lengths in terms of discrete # of grid points
@@ -28,16 +28,16 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     pts_gap = round(spc_gap/dl);
 
     % compute number of grid points needed and corresoponding half grids
-    Nx = round(lambda*beta/dl);
+    Nz = round(lambda*beta/dl);
     Ny = round(2*npml + 2*pts_pml_src + 2*pts_src_tooth + 4*pts_pil + pts_gap);   
-    nx = round(Nx/2);
+    nz = round(Nz/2);
     ny = round(Ny/2);
 
     % initialize the perimittivity, permeability and Mz current source
     % grids
-    ER = ones(Nx,Ny);
-    MuR = ones(Nx,Ny);
-    b = zeros(Nx,Ny);
+    ER = ones(Nz,Ny);
+    MuR = ones(Nz,Ny);
+    b = zeros(Nz,Ny);
 
     % inject the current sources
     b(:,npml + pts_pml_src) = 1;
@@ -52,13 +52,13 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     y_pil_left = npml + pts_pml_src + pts_src_tooth + pts_pil;
     y_pil_right = Ny - (npml + pts_pml_src + pts_src_tooth + pts_pil) + 1;
     % draw the pillars ono the epsilon grid
-    for xi = (1:Nx)
+    for zi = (1:Nz)
         for yi = (1:Ny)
-            if ((xi-nx)^2 + (yi-y_pil_left)^2 < pts_pil^2)
-                ER(xi,yi) = eps;
+            if ((zi-nz)^2 + (yi-y_pil_left)^2 < pts_pil^2)
+                ER(zi,yi) = eps;
             end
-            if ((xi-nx)^2 + (yi-y_pil_right)^2 < pts_pil^2)
-                ER(xi,yi) = eps;        
+            if ((zi-nz)^2 + (yi-y_pil_right)^2 < pts_pil^2)
+                ER(zi,yi) = eps;        
             end                
         end
     end
@@ -66,22 +66,25 @@ function [G,phi,fields_out] = compute_fields(radius, gap, beta, n_per_lam)
     % compute the fields (and normalize by E0) for the real permittivity
     % grid (with dual pillars)
     [fields, ~] = FDFD(ER,MuR,RES,NPML,BC,lambda,Pol,b);
-    Ex = fields.Ex/E0;
+    Ez = fields.Ex/E0;
     Ey = fields.Ey/E0;
-    Hz = fields.Hz/E0;
+    Hx = fields.Hz/E0;
     
     % make field_out variable to return normalized fields
+    % NOTE: in my FDFD solver convention, (x,y) are the dimensions in the
+    % plane whereas (z) is out of the plane.  We change this so that the z
+    % is now the propagation direction.  THIS IS NOT A TYPO!
     fields_out = {};
-    fields_out.Ex = Ex;
+    fields_out.Ez = Ez;
     fields_out.Ey = Ey;
-    fields_out.Hz = Hz;
+    fields_out.Hx = Hx;
     
     % get accelerating fields at gap center, define acceleration 'kernel' e
-    Ex_mid = Ex(:,ny);
-    eta = exp(1i*2*pi*(1:Nx)/Nx)/Nx;
+    Ez_mid = Ez(:,ny);
+    eta = exp(1i*2*pi*(1:Nz)/Nz)/Nz;
 
     % compute gradient phasor
-    g = sum(Ex_mid.*transpose(eta));
+    g = sum(Ez_mid.*transpose(eta));
     % maximum acceleration gradient is the absolute value
     G = abs(g);
     % grab the phase at maximum

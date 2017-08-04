@@ -26,9 +26,9 @@ classdef simulation < dynamicprops
         gap = 400e-9;                       % gap spacing (m)
         L;                                  % length of structure along propagation
         W;                                  % width of structure perpendicular to propagation
-        Nx;                                 % number of x grid points
+        Nz;                                 % number of x grid points
         Ny;                                 % number of y grid points
-        nx;                                 % number of x grid points/2
+        nz;                                 % number of x grid points/2
         ny;                                 % number of y grid points/2
         % Field simulation parameters
         n_per_lam = 200;                    % number of grid points per wavelenth
@@ -79,11 +79,10 @@ classdef simulation < dynamicprops
             obj.compute_fields;
         end
         function [out, trajectory] = propagate_particle(obj, in, phi)
-            if (obj.verbose) display('propagating the field with FDFD ...');  end
-            
             % Propagates a particle with phase space vector 'in' =
             % [x0,y0,z0, px0, py0, pz0] to give 'out' vector after full
-            % propagation with starting electric fields of phase 'phi'
+            % propagation with starting electric fields of phase 'phi'            
+            if (obj.verbose) display('propagating the field with FDFD ...');  end            
             if (isempty(obj.fields))
                 error('need to solve_fields before calling this method')
             end            
@@ -95,14 +94,14 @@ classdef simulation < dynamicprops
             if (isempty(obj.fields))
                 error('need to solve_fields before calling this method')
             end
-            if strcmp(val,'Ex')
-                field_array = obj.fields.Ex;
+            if strcmp(val,'Ez')
+                field_array = obj.fields.Ez;
             elseif strcmp(val,'Ey')
                 field_array = obj.fields.Ey;                
-            elseif strcmp(val,'Hz')
-                field_array = obj.fields.Hz;                                
+            elseif strcmp(val,'Hx')
+                field_array = obj.fields.Hx;                                
             else
-                error('need to specify one of Ex, Ey or Hz as an argument to this method')
+                error('need to specify one of Ez, Ey or Hx as an argument to this method')
             end
             scale = max(abs(field_array(:)));
             scale_factor = 0.2;    
