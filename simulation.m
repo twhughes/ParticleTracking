@@ -88,6 +88,16 @@ classdef simulation < dynamicprops
             end            
             [out, trajectory] = propagate_particle_OO(obj, in, phi);            
         end
+        function [outs] = propagate_particle_vectorized(obj, ins)
+            % Propagates a particle with phase space vector 'in' =
+            % [x0,y0,z0, px0, py0, pz0] to give 'out' vector after full
+            % propagation with starting electric fields of phase 'phi'            
+            if (obj.verbose) display('propagating the field with FDFD ...');  end            
+            if (isempty(obj.fields))
+                error('need to solve_fields before calling this method')
+            end            
+            [outs] = propagate_particle_OO_vectorized(obj, ins);            
+        end        
         function obj = make_video(obj,val)
             % Makes a video of the fields specified in argument (Ex, Ey,
             % Ez) as a string

@@ -15,7 +15,7 @@ Ne = 500;                           % number of electrons
 upd = textprogressbar(Ne);
 s.verbose = false;                  % turn of verbosity (dont print)
 clf; hold all;
-out_distributions = zeros(4,Ne);
+outs = zeros(4,Ne);
 in_distributions = zeros(5,Ne);
 subplot(2,2,1); hold all;
 
@@ -33,10 +33,10 @@ for i = (1:Ne)
     in_distributions(:,i) = ([in phi+s.phi0]);
     [out, ~] = s.propagate_particle(in, phi);    
     %plot(1e6*traj(1,:),1e6*traj(2,:))
-    out_distributions(:,i) = out;
+    outs(:,i) = out;
 end
 
-%%
+%{
 %subplot(2,3,(1:2));
 %xlabel('x position (um)');
 %ylabel('y position (um)');

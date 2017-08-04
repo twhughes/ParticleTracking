@@ -2,7 +2,7 @@ function [out, trajectory] = propagate_particle_OO(obj, in, phi)
     
     % strip the phase space
     z0  = in(1);
-    y0  = in(2);
+    y0  = in(2);   
     pz0 = in(3);
     py0 = in(4);
     
